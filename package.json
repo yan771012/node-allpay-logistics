@@ -4,7 +4,10 @@
   "description": "Allpay logistics",
   "main": "dist/allpay.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "babel-node src/test.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist",
+    "build": "npm run clean && babel src -d dist --copy-files"
   },
   "repository": {
     "type": "git",
@@ -23,12 +26,16 @@
   "devDependencies": {
     "babel-cli": "^6.10.1",
     "babel-preset-es2015-node": "^6.1.0",
-    "babel-preset-stage-0": "^6.5.0"
+    "babel-preset-stage-0": "^6.5.0",
+    "rimraf": "^2.5.4"
   },
   "author": "Yan Chen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/yan771012/node-allpay-logistics/issues"
   },
-  "homepage": "https://github.com/yan771012/node-allpay-logistics#readme"
+  "homepage": "https://github.com/yan771012/node-allpay-logistics#readme",
+  "dependencies": {
+    "request": "^2.74.0"
+  }
 }
