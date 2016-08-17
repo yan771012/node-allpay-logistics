@@ -4,7 +4,7 @@ function validateConstructor(constructorObj = {}) {
   //check required
   let requiredFields = ['merchantID', 'hashKey', 'hashIV'];
   requiredFields.forEach((field) => {
-    if (!constructorObj[field]) {
+    if (typeof constructorObj[field] === 'undefined') {
       errors.push(`${field} is required.`);
     }
   });
@@ -31,13 +31,80 @@ function validateConstructor(constructorObj = {}) {
   checkValidate(errors);
 }
 
+function validateMap(opts = {}) {
+  let errors = [];
+
+  //check required
+  let requiredFields = ['MerchantTradeNo', 'LogisticsType', 'LogisticsSubType', 'IsCollection', 'ServerReplyURL'];
+  requiredFields.forEach((field) => {
+    if (typeof opts[field] === 'undefined') {
+      errors.push(`${field} is required.`);
+    }
+  });
+  checkValidate(errors);
+
+  //物流類型
+  let logisticsTypeValues = ['CVS'];
+  if (!~logisticsTypeValues.indexOf(opts.LogisticsType)) {
+    errors.push(`LogisticsType should be ${logisticsTypeValues.join(', ')}.`);
+  }
+  checkValidate(errors);
+
+  //物流子類型
+  if (opts.LogisticsType === 'CVS') {
+    let LogisticsSubTypeForCVS = ['FAMI', 'UNIMART', 'HILIFT', 'FAMIC2C', 'UNIMARTC2C', 'HILIFTC2C'];
+    if (!~LogisticsSubTypeForCVS.indexOf(opts.LogisticsSubType)) {
+      errors.push(`LogisticsSubType should be ${LogisticsSubTypeForCVS.join(', ')}.`);
+    }
+  }
+  checkValidate(errors);
+
+  //廠商交易編號
+  if (typeof opts.MerchantTradeNo !== 'string') {
+    errors.push(`MerchantTradeNo should be string.`);
+  } else if (opts.MerchantTradeNo.length > 20) {
+    errors.push(`The maximum length for MerchantTradeNo is 20.`);
+  }
+
+  //是否代收貨款
+  let IsCollectionValues = ['Y', 'N'];
+  if (!~IsCollectionValues.indexOf(opts.IsCollection)) {
+    errors.push(`LogisticsType should be ${IsCollectionValues.join(', ')}.`);
+  }
+
+  //Server 端回覆網址
+  if (typeof opts.ServerReplyURL !== 'string') {
+    errors.push(`ServerReplyURL should be string.`);
+  } else if (opts.ServerReplyURL.length > 200) {
+    errors.push(`The maximum length for ServerReplyURL is 200.`);
+  }
+
+  //額外資訊
+  if (typeof opts.ExtraData !== 'undefined') {
+    if (typeof opts.ExtraData !== 'string') {
+      errors.push(`ExtraData should be string.`);
+    } else if (opts.ExtraData.length > 20) {
+      errors.push(`The maximum length for ExtraData is 20.`);
+    }
+  }
+
+  //使用設備
+  if (typeof opts.Device !== 'undefined') {
+    let DeviceValues = [0, 1];
+    if (!~DeviceValues.indexOf(opts.Device)) {
+      errors.push(`Device should be ${DeviceValues.join(', ')}.`);
+    }
+  }
+  checkValidate(errors);
+}
+
 function validateCreate(opts = {}) {
   let errors = [];
 
   //check base required
   let requiredFields = ['MerchantTradeNo', 'MerchantTradeDate', 'LogisticsType', 'LogisticsSubType', 'GoodsAmount', 'SenderName', 'ReceiverName', 'ServerReplyURL'];
   requiredFields.forEach((field) => {
-    if (!opts[field]) {
+    if (typeof opts[field] === 'undefined') {
       errors.push(`${field} is required.`);
     }
   });
@@ -54,12 +121,12 @@ function validateCreate(opts = {}) {
   if (opts.LogisticsType === 'CVS') {
     let LogisticsSubTypeForCVS = ['FAMI', 'UNIMART', 'HILIFT', 'FAMIC2C', 'UNIMARTC2C', 'HILIFTC2C'];
     if (!~LogisticsSubTypeForCVS.indexOf(opts.LogisticsSubType)) {
-      errors.push(`LogisticsType should be ${LogisticsSubTypeForCVS.join(', ')}.`);
+      errors.push(`LogisticsSubType should be ${LogisticsSubTypeForCVS.join(', ')}.`);
     }
   } else {
     let LogisticsSubTypeForHome = ['TCAT', 'ECAN'];
     if (!~LogisticsSubTypeForHome.indexOf(opts.LogisticsSubType)) {
-      errors.push(`LogisticsType should be ${LogisticsSubTypeForHome.join(', ')}.`);
+      errors.push(`LogisticsSubType should be ${LogisticsSubTypeForHome.join(', ')}.`);
     }
   }
   checkValidate(errors);
@@ -89,13 +156,13 @@ function validateCreate(opts = {}) {
 
   //是否代收貨款
   let IsCollectionValues = ['Y', 'N'];
-  if (opts.IsCollection && !~IsCollectionValues.indexOf(opts.IsCollection)) {
-    errors.push(`LogisticsType should be ${IsCollectionValues.join(', ')}.`);
+  if (typeof opts.IsCollection !== 'undefined' && !~IsCollectionValues.indexOf(opts.IsCollection)) {
+    errors.push(`IsCollection should be ${IsCollectionValues.join(', ')}.`);
   }
 
   //代收金額
   if (opts.IsCollection === 'Y') {
-    if (!opts.CollectionAmount){
+    if (typeof opts.CollectionAmount === 'undefined') {
       errors.push(`CollectionAmount is required.`);
     } else if (!Number.isInteger(opts.CollectionAmount)) {
       errors.push(`CollectionAmount should be Integer.`);
@@ -108,7 +175,7 @@ function validateCreate(opts = {}) {
 
   //物品名稱
   if (~['FAMIC2C', 'UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType)) {
-    if (!opts.GoodsName) {
+    if (typeof opts.GoodsName === 'undefined') {
       errors.push(`GoodsName is required.`);
     } else if (!Array.isArray(opts.GoodsName)) {
       errors.push(`GoodsName should be array.`);
@@ -125,11 +192,11 @@ function validateCreate(opts = {}) {
   }
 
   //寄件人電話
-  if (opts.LogisticsType === 'Home' && !opts.SenderPhone && !opts.SenderCellPhone) {
+  if (opts.LogisticsType === 'Home' && typeof opts.SenderPhone === 'undefined' && typeof opts.SenderCellPhone === 'undefined') {
     errors.push(`SenderPhone or SenderCellPhone are required.`);
   }
 
-  if (opts.SenderPhone) {
+  if (typeof opts.SenderPhone !== 'undefined') {
     if (typeof opts.SenderPhone !== 'string') {
       errors.push(`SenderPhone should be string.`);
     } else if (opts.SenderPhone.length > 20) {
@@ -138,11 +205,11 @@ function validateCreate(opts = {}) {
   }
 
   //寄件人手機
-  if (~['UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType) && !opts.SenderCellPhone) {
+  if (~['UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType) && typeof opts.SenderCellPhone === 'undefined') {
     errors.push(`SenderCellPhone is required.`);
   }
 
-  if (opts.SenderCellPhone) {
+  if (typeof opts.SenderCellPhone !== 'undefined') {
     if (typeof opts.SenderCellPhone !== 'string') {
       errors.push(`SenderCellPhone should be string.`);
     } else if (opts.SenderCellPhone.length > 20) {
@@ -158,11 +225,11 @@ function validateCreate(opts = {}) {
   }
 
   //收件人電話
-  if ((opts.LogisticsType === 'Home' || opts.LogisticsSubType === 'HILIFEC2C') && !opts.ReceiverPhone && !opts.ReceiverCellPhone) {
+  if ((opts.LogisticsType === 'Home' || opts.LogisticsSubType === 'HILIFEC2C') && typeof opts.ReceiverPhone === 'undefined' && typeof opts.ReceiverCellPhone === 'undefined') {
     errors.push(`ReceiverPhone or ReceiverCellPhone are required.`);
   }
 
-  if (opts.ReceiverCellPhone) {
+  if (typeof opts.ReceiverCellPhone !== 'undefined') {
     if (typeof opts.ReceiverPhone !== 'string') {
       errors.push(`ReceiverPhone should be string.`);
     } else if (opts.ReceiverPhone.length > 20) {
@@ -171,11 +238,11 @@ function validateCreate(opts = {}) {
   }
 
   //收件人手機
-  if (~['UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType) && !opts.ReceiverCellPhone) {
+  if (~['UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType) && typeof opts.ReceiverCellPhone === 'undefined') {
     errors.push(`ReceiverCellPhone is required.`);
   }
 
-  if (opts.ReceiverCellPhone) {
+  if (typeof opts.ReceiverCellPhone !== 'undefined') {
     if (typeof opts.ReceiverCellPhone !== 'string') {
       errors.push(`ReceiverCellPhone should be string.`);
     } else if (opts.ReceiverCellPhone.length > 20) {
@@ -184,7 +251,7 @@ function validateCreate(opts = {}) {
   }
 
   //收件人email
-  if (opts.ReceiverEmail) {
+  if (typeof opts.ReceiverEmail !== 'undefined') {
     if (typeof opts.ReceiverEmail !== 'string') {
       errors.push(`ReceiverEmail should be string.`);
     } else if (opts.ReceiverEmail.length > 100) {
@@ -193,7 +260,7 @@ function validateCreate(opts = {}) {
   }
 
   //交易描述
-  if (opts.TradeDesc) {
+  if (typeof opts.TradeDesc !== 'undefined') {
     if (typeof opts.TradeDesc !== 'string') {
       errors.push(`TradeDesc should be string.`);
     } else if (opts.TradeDesc.length > 200) {
@@ -209,7 +276,7 @@ function validateCreate(opts = {}) {
   }
 
   //Client 端回覆網址
-  if (opts.ClientReplyURL) {
+  if (typeof opts.ClientReplyURL !== 'undefined') {
     if (typeof opts.ClientReplyURL !== 'string') {
       errors.push(`ClientReplyURL should be string.`);
     } else if (opts.ClientReplyURL.length > 200) {
@@ -218,11 +285,11 @@ function validateCreate(opts = {}) {
   }
 
   //Server 端物流回傳網址
-  if (opts.LogisticsSubType === 'UNIMARTC2C' && !opts.LogisticsC2CReplyURL) {
+  if (opts.LogisticsSubType === 'UNIMARTC2C' && typeof opts.LogisticsC2CReplyURL === 'undefined') {
     errors.push(`LogisticsC2CReplyURL is required.`);
   }
 
-  if (opts.LogisticsC2CReplyURL) {
+  if (typeof opts.LogisticsC2CReplyURL !== 'undefined') {
     if (typeof opts.LogisticsC2CReplyURL !== 'string') {
       errors.push(`LogisticsC2CReplyURL should be string.`);
     } else if (opts.LogisticsC2CReplyURL.length > 200) {
@@ -231,7 +298,7 @@ function validateCreate(opts = {}) {
   }
 
   //備註
-  if (opts.Remark) {
+  if (typeof opts.Remark !== 'undefined') {
     if (typeof opts.Remark !== 'string') {
       errors.push(`Remark should be string.`);
     } else if (opts.Remark.length > 200) {
@@ -240,7 +307,7 @@ function validateCreate(opts = {}) {
   }
 
   //特約合作平台商代號(由allpay提供)
-  if (opts.PlatformID) {
+  if (typeof opts.PlatformID !== 'undefined') {
     if (typeof opts.PlatformID !== 'string') {
       errors.push(`PlatformID should be string.`);
     } else if (opts.PlatformID.length > 10) {
@@ -252,7 +319,7 @@ function validateCreate(opts = {}) {
   if (opts.LogisticsType === 'Home') {
     let requiredFieldsForHome = ['SenderZipCode', 'SenderAddress', 'ReceiverZipCode', 'ReceiverAddress', 'Temperature', 'Distance', 'Specification'];
     requiredFieldsForHome.forEach((field) => {
-      if (!opts[field]) {
+      if (typeof opts[field] === 'undefined') {
         errors.push(`${field} is required.`);
       }
     });
@@ -313,7 +380,7 @@ function validateCreate(opts = {}) {
     }
 
     //預定取件時段
-    if (opts.ScheduledPickupTime) {
+    if (typeof opts.ScheduledPickupTime !== 'undefined') {
       let ScheduledPickupTimeValues = ['1', '2', '3', '4'];
       if (!~ScheduledPickupTimeValues.indexOf(opts.ScheduledPickupTime)) {
         errors.push(`ScheduledPickupTime should be ${ScheduledPickupTimeValues.join(', ')}.`);
@@ -321,7 +388,7 @@ function validateCreate(opts = {}) {
     }
 
     //預定送達時段
-    if (opts.ScheduledDeliveryTime) {
+    if (typeof opts.ScheduledDeliveryTime !== 'undefined') {
       if (opts.LogisticsSubType === 'TCAT') {
         let ScheduledDeliveryTimeValuesForTCAT = ['1', '2', '3', '4', '5'];
         if (!~ScheduledDeliveryTimeValuesForTCAT.indexOf(opts.ScheduledDeliveryTime)) {
@@ -336,7 +403,7 @@ function validateCreate(opts = {}) {
     }
 
     //指定送達日
-    if (opts.LogisticsSubType === 'ECAN' && opts.ScheduledDeliveryDate) {
+    if (opts.LogisticsSubType === 'ECAN' && typeof opts.ScheduledDeliveryDate !== 'undefined') {
       if (typeof opts.ScheduledDeliveryDate !== 'string') {
         errors.push(`ScheduledDeliveryDate should be string.`);
       } else if (opts.ScheduledDeliveryDate.length != 10) {
@@ -345,7 +412,7 @@ function validateCreate(opts = {}) {
     }
 
     //包裹件數
-    if (opts.LogisticsSubType === 'ECAN' && opts.PackageCount) {
+    if (opts.LogisticsSubType === 'ECAN' && typeof opts.PackageCount !== 'undefined') {
       if (!Number.isInteger(opts.PackageCount)) {
         errors.push(`PackageCount should be Integer.`);
       } else if (opts.LogisticsSubType === 'UNIMARTC2C' && (opts.GoodsAmount < 1 || opts.GoodsAmount > 999)) {
@@ -356,7 +423,7 @@ function validateCreate(opts = {}) {
 
   if (opts.LogisticsType === 'CVS') {
     //收件人門市代號
-    if (!opts.ReceiverStoreID) {
+    if (typeof opts.ReceiverStoreID === 'undefined') {
       errors.push(`ReceiverStoreID is required.`);
     } else if (typeof opts.ReceiverStoreID !== 'string') {
       errors.push(`ReceiverStoreID should be string.`);
@@ -365,7 +432,7 @@ function validateCreate(opts = {}) {
     }
 
     //退貨門市代號
-    if (opts.ReturnStoreID) {
+    if (typeof opts.ReturnStoreID !== 'undefined') {
       if (typeof opts.ReturnStoreID !== 'string') {
         errors.push(`ReturnStoreID should be string.`);
       }
@@ -388,5 +455,6 @@ function checkValidate(errors) {
 
 export default {
   validateConstructor: validateConstructor,
-  validateCreate: validateCreate
+  validateCreate: validateCreate,
+  validateMap: validateMap
 }

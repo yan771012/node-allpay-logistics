@@ -8,6 +8,7 @@ const MODE = {
 };
 
 const API = {
+  MAP: '/Express/map',
   CREATE: '/Express/Create'
 };
 
@@ -44,21 +45,47 @@ class Allpay {
 
   /**
    * 物流訂單產生
-   * @param opt
+   * @param opts
    * @param callback
    */
-  create(opt, callback) {
+  create(opts, callback) {
 
+    // check initial
     if (!CONFIG.initialized) {
       throw new Error('Allpay has not been initialized.');
     }
 
-    validator.validateCreate(opt);
+    // check input options
+    validator.validateCreate(opts);
 
-    let requestData = format.formatCreateDate(opt, CONFIG);
+    // format request data
+    let requestData = format.formatCreateDate(opts, CONFIG);
 
+    // send request
     request.post({url: getURL() + API.CREATE, form: requestData}, callback);
+  }
 
+  /**
+   * 電子地圖串接
+   * @param opts
+   * @return {string} url
+   * @return {object} postData
+   */
+  map(opts) {
+
+    // check initial
+    if (!CONFIG.initialized) {
+      throw new Error('Allpay has not been initialized.');
+    }
+
+    // check input options
+    validator.validateMap(opts);
+
+    // format request data
+    let postData = format.formatMapData(opts, CONFIG);
+    let url = getURL() + API.MAP;
+
+    return {postData, url};
   }
 }
 
