@@ -67,8 +67,8 @@ function validateCreate(opts = {}) {
   //廠商交易編號
   if (typeof opts.MerchantTradeNo !== 'string') {
     errors.push(`MerchantTradeNo should be string.`);
-  } else if (opts.MerchantTradeNo.length > 10) {
-    errors.push(`The maximum length for MerchantTradeNo is 10.`);
+  } else if (opts.MerchantTradeNo.length > 20) {
+    errors.push(`The maximum length for MerchantTradeNo is 20.`);
   }
 
   //廠商交易時
