@@ -84,8 +84,8 @@ class Allpay {
     // format request data
     let postData = format.formatMapData(opts, CONFIG);
     let url = getURL() + API.MAP;
-
-    return {postData, url};
+    let form = genHtmlForm(url, postData);
+    return {postData, url, form};
   }
 }
 
@@ -94,6 +94,17 @@ function getURL() {
     return MODE.production;
   }
   return MODE.stage;
+}
+
+function genHtmlForm(url, postData) {
+  let form = `<form id="_formDate" action="${url}" method="post" target="allpayLogisticsForm">`;
+
+  Object.keys(postData).forEach(key => {
+    form += `<input type="hidden" name="${key}" value="${postData[key]}"/>`
+  });
+  form += `</form>`;
+
+  return form;
 }
 
 module.exports = Allpay;
