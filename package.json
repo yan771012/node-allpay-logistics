@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/yan771012/node-allpay-logistics#readme",
   "dependencies": {
-    "request": "^2.74.0"
+    "form-data": "^1.0.0-rc4",
+    "isomorphic-fetch": "^2.2.1"
   }
 }

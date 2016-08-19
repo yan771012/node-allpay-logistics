@@ -22,7 +22,8 @@ function formatCreateDate(opts, config) {
   data.MerchantID = config.merchantID;
 
   let usedFields = [];
-  switch (data.LogisticsSubType) {
+
+  switch (opts.LogisticsSubType) {
     case 'FAMI':
     case 'UNIMART':
     case 'HILIFE':

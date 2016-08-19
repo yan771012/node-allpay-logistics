@@ -1,6 +1,7 @@
 import validator from './validator';
 import format    from './format';
-import request   from 'request';
+import fetch     from 'isomorphic-fetch';
+import formData  from 'isomorphic-form-data';
 
 const MODE = {
   production: 'https://newlogistics.allpay.com.tw',
@@ -61,8 +62,22 @@ class Allpay {
     // format request data
     let requestData = format.formatCreateDate(opts, CONFIG);
 
+    let form = new FormData();
+    Object.keys(requestData).forEach(key => {
+      form.append(key, requestData[key]);
+    });
+
     // send request
-    request.post({url: getURL() + API.CREATE, form: requestData}, callback);
+    fetch(getURL() + API.CREATE, {
+      method: "POST",
+      body: form
+    }).then(response => {
+      response.text().then(function (responseBody) {
+        callback(null, response, responseBody);
+      })
+    }, function (error) {
+      callback(error);
+    });
   }
 
   /**
