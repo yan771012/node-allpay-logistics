@@ -12,7 +12,7 @@ const API = {
   CREATE: '/Express/Create'
 };
 
-const CONFIG = {
+let CONFIG = {
   merchantID: "",
   hashKey: "",
   hashIV: "",
