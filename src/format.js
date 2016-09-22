@@ -13,7 +13,7 @@ function formatMapData(opts, config) {
     }
   });
 
-  return generateCheckMacValue(config.hashKey, config.hashIV, data);
+  return data;
 }
 
 function formatCreateDate(opts, config) {
