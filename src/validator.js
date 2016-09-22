@@ -229,7 +229,7 @@ function validateCreate(opts = {}) {
     errors.push(`ReceiverPhone or ReceiverCellPhone are required.`);
   }
 
-  if (typeof opts.ReceiverCellPhone !== 'undefined') {
+  if (typeof opts.ReceiverPhone !== 'undefined') {
     if (typeof opts.ReceiverPhone !== 'string') {
       errors.push(`ReceiverPhone should be string.`);
     } else if (opts.ReceiverPhone.length > 20) {
