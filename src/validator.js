@@ -177,9 +177,9 @@ function validateCreate(opts = {}) {
   if (~['FAMIC2C', 'UNIMARTC2C', 'HILIFTC2C'].indexOf(opts.LogisticsSubType)) {
     if (typeof opts.GoodsName === 'undefined') {
       errors.push(`GoodsName is required.`);
-    } else if (!Array.isArray(opts.GoodsName)) {
-      errors.push(`GoodsName should be array.`);
-    } else if (opts.GoodsName.join('#').length > 60) {
+    } else if (typeof opts.GoodsName !== 'string') {
+      errors.push(`GoodsName should be string.`);
+    } else if (opts.GoodsName.length > 60) {
       errors.push(`The maximum length for GoodsName is 60.`);
     }
   }
