@@ -4,8 +4,8 @@ import fetch     from 'isomorphic-fetch';
 import formData  from 'isomorphic-form-data';
 
 const MODE = {
-  production: 'https://newlogistics.ecpay.com.tw',
-  stage: 'https://newlogistics-stage.ecpay.com.tw'
+  production: 'https://logistics.ecpay.com.tw',
+  stage: 'https://logistics-stage.ecpay.com.tw'
 };
 
 const API = {
