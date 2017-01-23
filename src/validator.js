@@ -179,8 +179,8 @@ function validateCreate(opts = {}) {
       errors.push(`GoodsName is required.`);
     } else if (typeof opts.GoodsName !== 'string') {
       errors.push(`GoodsName should be string.`);
-    } else if (opts.GoodsName.length > 60) {
-      errors.push(`The maximum length for GoodsName is 60.`);
+    } else if (getStringCharLength(opts.GoodsName.length) > 50) {
+      errors.push(`The maximum length for GoodsName is 50.`);
     }
   }
 
@@ -452,9 +452,20 @@ function checkValidate(errors) {
   }
 }
 
+function getStringCharLength(str = '') {
+  let length = str.length;
+  let spChar = str.match(/[^\x00-\x80]/g);
+
+  if (spChar != null) {
+    length += spChar.length;
+  }
+
+  return length;
+}
+
 
 export default {
-  validateConstructor: validateConstructor,
-  validateCreate: validateCreate,
-  validateMap: validateMap
+  validateConstructor,
+  validateCreate,
+  validateMap
 }
