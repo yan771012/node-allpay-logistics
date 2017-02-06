@@ -179,7 +179,7 @@ function validateCreate(opts = {}) {
       errors.push(`GoodsName is required.`);
     } else if (typeof opts.GoodsName !== 'string') {
       errors.push(`GoodsName should be string.`);
-    } else if (getStringCharLength(opts.GoodsName.length) > 50) {
+    } else if (getStringCharLength(opts.GoodsName) > 50) {
       errors.push(`The maximum length for GoodsName is 50.`);
     }
   }
